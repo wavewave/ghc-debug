@@ -40,7 +40,7 @@ import Data.List (sortOn)
 import Language.Dot
 import qualified Data.Set as S
 import Control.Monad
-
+import qualified Data.Text as T
 
 type Key = InfoTablePtr
 
@@ -208,8 +208,8 @@ findSlice rm k = Graph StrictGraph DirectedGraph (Just (mkDotId k)) <$> evalStat
           let next_edges = take 20 (lookupRM cur_k rm)
               -- Decoding very wide is bad
               edge_stmts = map mkEdge next_edges
-              node_stmt = NodeStatement (NodeId (mkDotId cur_k) Nothing) [AttributeSetValue (StringId "label") (StringId label) ]
-              mkEdge (Edge _ e, ri) = EdgeStatement [ENodeId NoEdge (NodeId (mkDotId cur_k) Nothing), ENodeId DirectedEdge (NodeId (mkDotId e) Nothing)] [AttributeSetValue (StringId "label") (StringId (show (getRank ri))) ]
+              node_stmt = NodeStatement (NodeId (mkDotId cur_k) Nothing) [AttributeSetValue (StringId "label") (StringId (T.pack label)) ]
+              mkEdge (Edge _ e, ri) = EdgeStatement [ENodeId NoEdge (NodeId (mkDotId cur_k) Nothing), ENodeId DirectedEdge (NodeId (mkDotId e) Nothing)] [AttributeSetValue (StringId "label") (StringId (T.pack (show (getRank ri)))) ]
 
           modify' (S.insert cur_k)
           ss <- concat <$> mapM (go (n-1) . edgeTarget . fst) next_edges
